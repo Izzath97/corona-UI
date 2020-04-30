@@ -1,18 +1,26 @@
 import axios from 'axios';
-import { async } from 'q';
+import { CountryPicker } from '../components';
+import { async } from 'rxjs/internal/scheduler/async';
 
 const url = 'https://covid19.mathdro.id/api';
 
-export const fetchData = async() =>{
-try{
-    const {data:{confirmed,deaths,lastUpdate,recovered}}= await axios.get(url);
+export const fetchData = async (country) =>{
+    let changeableUrl =url;
 
-    
+    if(country){
+        changeableUrl=`${url}/countries/${country}`;
+        console.log(changeableUrl);
+    }
+  
+try{
+    const {data:{confirmed,deaths,lastUpdate,recovered}}= await axios.get(changeableUrl);
+
+    console.log({confirmed,deaths,lastUpdate,recovered});
     return {confirmed,deaths,lastUpdate,recovered};
     
 }
 catch(error){
-
+console.log(error);
 }
 }
 
@@ -34,4 +42,16 @@ date:dailyData.reportDate,
 
     }
 
+}
+
+export const countries= async()=>{
+    try{
+        const {data:{countries}}=await axios.get(`${url}/countries`);
+
+        return countries.map((country)=>country.name);
+     
+    }
+        catch(error){
+            console.log(error);
+        }
 }
